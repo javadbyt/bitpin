@@ -1,9 +1,10 @@
 import requests
 from telegram import Bot
 from telegram.error import TelegramError
-import time
+import asyncio
 import os
 
+# تنظیمات از متغیرهای محیطی
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 CHANNEL_ID = os.getenv('CHANNEL_ID')
 BITPIN_API_TOKEN = os.getenv('BITPIN_API_TOKEN')
@@ -27,15 +28,18 @@ def get_prices():
     except Exception as e:
         return f"خطا: {str(e)}"
 
-def send_message():
+async def send_message():
     try:
         bot = Bot(token=TELEGRAM_TOKEN)
         message = get_prices()
-        bot.send_message(chat_id=CHANNEL_ID, text=message)
+        await bot.send_message(chat_id=CHANNEL_ID, text=message)
     except TelegramError as e:
         print(f"خطا: {e}")
 
-if __name__ == "__main__":
+async def main():
     while True:
-        send_message()
-        time.sleep(60)
+        await send_message()
+        await asyncio.sleep(60)  # هر ۱ دقیقه
+
+if __name__ == "__main__":
+    asyncio.run(main())
